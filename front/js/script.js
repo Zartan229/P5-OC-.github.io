@@ -30,6 +30,7 @@ const productsOffer = (products) => {
     let productAltTxt = products[i].altTxt;
 
     const newElta = document.createElement("a");
+    newElta.href = "./product.html?id=" + products[i]._id;
     const newEltarticle = document.createElement("article");
     const newEltimg = document.createElement("img");
     newEltimg.src = "../../back/images/kanap0" + image +".jpeg";
