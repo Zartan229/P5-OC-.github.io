@@ -26,184 +26,100 @@ const getProducts = async (id) => {
     });
 };
 
-getProducts(getId(window.location.href));
-
 const setProduct = (products) => {
-  let classImage = document.querySelector(".item__img");
+  const classImage = document.querySelector(".item__img");
   const newEltimg = document.createElement("img");
   newEltimg.src = products.imageUrl;
   newEltimg.alt = products.altTxt;
   classImage.appendChild(newEltimg);
 
-  let eltTitle = document.getElementById("title");
+  const eltTitle = document.getElementById("title");
   eltTitle.textContent = products.name;
 
-  let eltPrice = document.getElementById("price");
+  const eltPrice = document.getElementById("price");
   eltPrice.textContent = products.price;
-  let eltDescription = document.getElementById("description");
+  const eltDescription = document.getElementById("description");
   eltDescription.textContent = products.description;
   products.colors.forEach((products) => {
     select = document.getElementById("colors");
 
-    var opt = document.createElement("option");
+    const opt = document.createElement("option");
     opt.value = products;
     opt.innerHTML = products;
     select.appendChild(opt);
   });
 };
+
 const getColors = () => {
-  var e = document.getElementById("colors");
-  var value = e.value;
+  const e = document.getElementById("colors");
+  const value = e.value;
 
   return value;
 };
 
-/*
-const cars = [];/*
-Object.keys(a).forEach((key) => {
-  i = 0;
-
-  var arr = eval("[" + a[key] + "]");
-//  console.log(arr);
-//  console.log(arr[i].id);
-//  console.log(arr[i].quantity);
-//  console.log(arr[i].colors);
-   
-  
-  var tab = {
-    quantity: arr[i].quantity,
-    id: arr[i].id,
-    colors: arr[i].colors,
-  };
-
-  cars.push(tab);
- // console.log(cars);
-
-  Object.keys(cars).forEach((keys) => {
-    console.log(cars[keys].id)
-    
-
-  })
-  // console.log(arr[i].id)
-  // idOfProduct.push(arr[i].id);
-  // console.log(idOfProduct)
-  /*if(arr[i].id == idOfProduct)
-  (
-    console.log("Already exist")
-  )
-  i++;
-
-;
-});
-  */
-function SaveDataToLocalStorage(data) {
-  var a = [];
-  // Parse the serialized data back into an aray of objects
-  a = JSON.parse(localStorage.getItem("obj")) || [];
-  // Push the new data (whether it be an object or anything else) onto the array
-
-  a.push(data);
-  // Alert the array value
-  alert(a); // Should be something like [Object array]
-  // Re-serialize the array back into a string and store it in localStorage
-  localStorage.setItem("obj", JSON.stringify(a));
-}
-
-function dateAlreadyExist(data) {
-  //console.log(data.id)
-  i = 0;
-  var a = [];
-
-  a = JSON.parse(localStorage.getItem("obj")) || [];
-  //  console.log(a);
-  const cars = [];
-  Object.keys(a).forEach((key) => {
-    var arr = eval("[" + a[key] + "]");
-    //  console.log(arr[i].quantity)
-    //   console.log(data.colors)
-    //   console.log(data.quantity)
-    //   console.log(arr[i].colors)
-    if (data.id === arr[i].id && data.colors === arr[i].colors) {
-      console.log("EXISTE DEJA");
-      console.log("COULEUR EST LA MEME");
-      console.log("doit modifier la qté ici, pas d'ajout pour le moment")
-      } 
-      else {
-        console.log("couleur différente ou id différente");
-        let objLinea = JSON.stringify(data);
-        SaveDataToLocalStorage(objLinea);
-      }
-     
-    
-    //arr[i].quantity = parseInt(arr[i].quantity) + parseInt(data.quantity);
-    //  console.log(arr);
-    //  console.log(arr[i].id);
-    //  console.log(arr[i].quantity);
-    //  console.log(arr[i].colors);
-})};
-
-/*
-for (var i = 0; i < arr.length; i++) {
-  for (var j = 0; j < arr[i].length; j++) {
-    console.log(arr[i][j]);
-  }*/
-
-
 const saveProduct = () => {
-  /*
-    localStorage.setItem("quantity", document.getElementById("quantity").value) 
-    console.log(localStorage.getItem("quantity"))
-
-    localStorage.setItem("id", getId(window.location.href)) 
-    console.log(localStorage.getItem("id"))
-
-    localStorage.setItem("colors", getColors()) 
-    console.log(localStorage.getItem("colors"))
-    */
-  let objJson = {
+  const objJson = {
     quantity: document.getElementById("quantity").value,
     id: getId(window.location.href),
     colors: getColors(),
   };
-  if (JSON.parse(localStorage.getItem("obj"))) {
-    console.log("dataAlreadyExist");
-    dateAlreadyExist(objJson);
+  //Récupère ce qui se trouve dans le localStorage nommer "obj"
+  //Stocke dans une valeur nommer a après avoir transformer la suite de string en objet
+  const a = JSON.parse(localStorage.getItem("obj"));
+  // The JSON.parse() method parses a JSON string,
+  // constructing the JavaScript value or object described by the string
+  // si rien ne se trouve elle est définit en tant que nulle
+
+  //const json = '{"result":true, "count":42}';
+  //const obj = JSON.parse(json);
+  //console.log(obj.count);
+  // expected output: 42
+  //console.log(obj.result);
+  // expected output: true
+  // console.log(a)
+  if (a) {
+    // Si la condition que a est initialiser alors il existe déjà des objets dans le localStorage
+    // Donc on doit vérifier si il existe déja un canaper avec une couleur identique
+    const productInLocalStorage = a.find((product) => product.id == objJson.id && product.colors == objJson.colors);
+    //La méthode find() renvoie la valeur du premier élément trouvé dans le tableau qui respecte la condition donnée par la fonction de test passée en argument
+    // Donc dans ce cas ci
+    // Si dans a se trouve déja un élément qui possède l'id et la couleur de l'objson que l'on éssaye d'implémenter alors il intialise productInLocalStorage avec la suite trouver
+    //Si un élément est trouvé, find retourne immédiatement la valeur de l'élément.
+    // Exemple si a.find((product) => product.id == objJson.id && product.colors == objJson.colors) trouve
+    // qté : 2 ; id : "107fb5b75607497b96722bda5b504926" ; colors : blue ;
+    // C'est qu'il est présent dans le localStorage donc -->
+
+    if (productInLocalStorage) {
+      // --> on vérifier si il a trouver le localStorage dans l'exemple oui
+      // Donc on prend la quaniter trouver dans le localStorage et on lui ajoute ce que l'on souhaite ajouter maintenant, donc la qté objJson a celle déjà existante.
+      // comme productInLocalStorage stock le a.find on peut modifier la quantité dans le localStorage a travers productInLocalStorage qui peut travailler sur le a
+      // modifier la quantité dans le ProductInLocalStorage correspond a modifier celle dans le a trouver.
+      // Si un élément correspondant a au canaper entrain d'ètre initialiser on n'ajoute pas ce dit canaper.
+      productInLocalStorage.quantity = parseInt(objJson.quantity) + parseInt(productInLocalStorage.quantity);
+      // La fonction parseInt() analyse une chaîne de caractère fournie en argument et renvoie un entier exprimé dans une base donnée.
+      //
+      // On prend la quantité de produit stocker dans le productInLocalStorage et celui stocker dans l'objson et on l'ajoute a la demande existente.
+      //    console.log(productInLocalStorage);
+      localStorage.setItem("obj", JSON.stringify(a));
+    } else {
+      a.push(objJson);
+      localStorage.setItem("obj", JSON.stringify(a));
+      //The function and syntax of find() is very much like the Array.filter
+      //method, except it only returns a single element. Another difference is when nothing is found,
+      // this method returns a value of undefined.
+      //    console.log(productInLocalStorage);
+      //Si a.find ne trouve pas un produit correspondant sur la couleurs et id,
+      // il renvoit undefined et ajoute le produit
+    }
   } else {
-    console.log("DataDoesn'tAlreadyExist");
-    let objLinea = JSON.stringify(objJson);
-
-    SaveDataToLocalStorage(objLinea);
+    a = [];
+    a.push(objJson);
+    localStorage.setItem("obj", JSON.stringify(a));
+    console.log(a);
+    //   console.log("no");
+    //  console.log(a);
   }
-  console.log("check");
-
-  var a = [];
-  a = JSON.parse(localStorage.getItem("obj")) || [];
   console.log(a);
-  // localStorage.setItem("obj", objLinea);
-
-  /*
-    var e = document.getElementById("colors");
-    var value = e.value;
-    var text = e.options[e.selectedIndex].text;
-
-    console.log(value)
-    console.log(text)
-
-
-
-    localStorage.setItem("colors", products.colors);
-    localStorage.setItem("id", products.id);
-    console.log(localStorage.getItem("id"))
-    console.log(products.colors)
-    console.log(localStorage.getItem("colors"))
-    */
 };
-/*
-    let eltTitle = document.getElementById("title");
-    eltTitle.textContent = "NAME";
-    let eltPrice = document.getElementById("price");
-    eltPrice.textContent = "42";
-    let eltDescription = document.getElementById("description");
-    eltDescription.textContent = "WOLOLOOLO";
-}
-*/
+
+getProducts(getId(window.location.href));
