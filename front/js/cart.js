@@ -60,10 +60,49 @@ const showCart = (a, products) => {
     setElementDiv.classList.add("cart__item__img");
     setElementArticle.appendChild(setElementDiv);
     const setElementImg = document.createElement("img");
-
     setElementImg.src = PrdouctDetail.imageUrl;
     setElementImg.alt = PrdouctDetail.altTxt
     setElementDiv.appendChild(setElementImg);
+    const setElementSecondDiv = document.createElement("div");
+    setElementSecondDiv.classList.add("cart__item__content");
+    setElementArticle.appendChild(setElementSecondDiv);
+    const setElementSecondFirstDiv = document.createElement("div");
+    setElementSecondFirstDiv.classList.add("cart__item__content__description");
+    setElementSecondDiv.appendChild(setElementSecondFirstDiv);
+    const setElementSecondFirstDivTitle = document.createElement("h2");
+    setElementSecondFirstDivTitle.textContent = PrdouctDetail.name;
+    const setElementSecondFirstDivP = document.createElement("p");
+    setElementSecondFirstDivP.textContent = a[key].colors;
+    const setElementSecondFirstDivPSecond = document.createElement("p");
+    setElementSecondFirstDivPSecond.textContent = PrdouctDetail.price = a[key].quantity * PrdouctDetail.price
+    setElementSecondFirstDiv.appendChild(setElementSecondFirstDivTitle);
+    setElementSecondFirstDiv.appendChild(setElementSecondFirstDivP);
+    setElementSecondFirstDiv.appendChild(setElementSecondFirstDivPSecond);
+    const setElementThirdDiv = document.createElement("div");
+    setElementThirdDiv.classList.add("cart__item__content__settings");
+    setElementArticle.appendChild(setElementThirdDiv);
+    const setElementThirdFirstDiv = document.createElement("div");
+    setElementThirdFirstDiv.classList.add("cart__item__content__settings__quantity");
+    setElementThirdDiv.appendChild(setElementThirdFirstDiv);
+    const setElementThirdFirstDivP = document.createElement("p");
+    setElementThirdFirstDiv.appendChild(setElementThirdFirstDivP);
+    setElementThirdFirstDivP.textContent = "Qté :";
+    const setElementThirdFirstDivInput = document.createElement("input");
+    setElementThirdFirstDiv.appendChild(setElementThirdFirstDivInput);
+    setElementThirdFirstDivInput.type = "number";
+    setElementThirdFirstDivInput.classList.add("itemQuantity");
+    setElementThirdFirstDivInput.name = "itemQuantity";
+    setElementThirdFirstDivInput.min = "1";
+    setElementThirdFirstDivInput.max = "100";
+    setElementThirdFirstDivInput.value = a[key].quantity
+    const setElementThirdSecondDiv = document.createElement("div");
+    setElementThirdDiv.appendChild(setElementThirdSecondDiv);
+    setElementThirdSecondDiv.classList.add("cart__item__content__settings__delete");
+    const setElementThirdSecondDivP = document.createElement("p");
+    setElementThirdSecondDivP.textContent = "Supprimer";
+    setElementThirdSecondDiv.appendChild(setElementThirdSecondDivP);
+    setElementThirdSecondDivP.classList.add("deleteItem");
+
     }
     else{
       console.log("echec")
