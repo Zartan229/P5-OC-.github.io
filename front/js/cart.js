@@ -1,8 +1,76 @@
-obj = JSON.parse(localStorage.getItem("obj"));
+let products = [];
+
+const getProducts = async () => {
+  await fetch("http://localhost:3000/api/products")
+    .then(function (res) {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+
+    .then((data) => {
+      products = data;
+      a = JSON.parse(localStorage.getItem("obj"));
+      showCart(a, products);
+      
+
+      //  return data;
+    })
+    .catch(function (err) {
+      // Une erreur est survenue
+    });
+};
+
+
 //console.log(obj.getItem("id"))
 //console.log(obj)
 
-const showCart = (obj) => {
+const showCart = (a, products) => {
+  console.log(products)
+  
+  
+  console.log(a)
+  
+
+
+/*
+  products.forEach((product) => {
+    ProductDetail = a.find((prod) => prod.id == product._id);
+
+    if(ProductDetail)
+    {
+      console.log("id trouver")
+    }
+  })*/
+
+  Object.keys(a).forEach((key) => {
+   // console.log(a[key]);
+    PrdouctDetail = products.find((prod) => a[key].id == prod._id)
+    console.log(PrdouctDetail)
+    if(PrdouctDetail)
+    {
+    console.log("trouver")
+    let getElementMaster = document.getElementById("cart__items");
+    const setElementArticle = document.createElement("article");
+    setElementArticle.classList.add("cart__item");
+    setElementArticle.dataset.id = PrdouctDetail._id
+    setElementArticle.dataset.colors = a[key].colors;
+    getElementMaster.appendChild(setElementArticle);
+    const setElementDiv = document.createElement("div");
+    setElementDiv.classList.add("cart__item__img");
+    setElementArticle.appendChild(setElementDiv);
+    const setElementImg = document.createElement("img");
+
+    setElementImg.src = PrdouctDetail.imageUrl;
+    setElementImg.alt = PrdouctDetail.altTxt
+    setElementDiv.appendChild(setElementImg);
+    }
+    else{
+      console.log("echec")
+    }
+})
+
+/*
   Object.keys(obj).forEach((key) => {
     console.log(obj[key]);
     let getElementMaster = document.getElementById("cart__items");
@@ -54,10 +122,11 @@ const showCart = (obj) => {
     setElementThirdSecondDivP.textContent = "Supprimer";
     setElementThirdSecondDiv.appendChild(setElementThirdSecondDivP);
     setElementThirdSecondDivP.classList.add("deleteItem");
-  });
+  });*/
 };
 
-showCart(obj);
+
+getProducts();
 
 //console.log(obj.colors)
 //console.log(obj.quantity)
