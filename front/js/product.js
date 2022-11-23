@@ -65,7 +65,7 @@ const saveProduct = () => {
   };
   //Récupère ce qui se trouve dans le localStorage nommer "obj"
   //Stocke dans une valeur nommer a après avoir transformer la suite de string en objet
-  const a = JSON.parse(localStorage.getItem("obj"));
+  let a = JSON.parse(localStorage.getItem("obj"));
   // The JSON.parse() method parses a JSON string,
   // constructing the JavaScript value or object described by the string
   // si rien ne se trouve elle est définit en tant que nulle
