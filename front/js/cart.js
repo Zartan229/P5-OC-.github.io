@@ -20,20 +20,18 @@ const getProducts = async () => {
         doc.forEach((docx) => {
           docx.addEventListener("change", changeQuantity);
         });
-
+        deleteProduct();
+/*
         var buttons = document.querySelectorAll(".deleteItem").length;
 
         for (var i = 0; i < buttons; i++) {
           document.querySelectorAll(".deleteItem")[i].addEventListener("click", function () {
-            alert("Button Clicked");
-            alert(this.closest("article").dataset.id);
-            alert(this.closest("article").dataset.colors);
-            alert(i);
-            const productToDelete = a.find(
-              (product) => product.id == this.closest("article").dataset.id && product.colors == this.closest("article").dataset.colors
-            );
+          //  alert("Button Clicked");
+           // alert(this.closest("article").dataset.id);
+           // alert(this.closest("article").dataset.colors);
+          // alert(i);
 
-            if (productToDelete) {
+            
               Object.keys(a).forEach((key) => {
                 //  console.log(a[key])
 
@@ -48,9 +46,10 @@ const getProducts = async () => {
                 }
               });
 
-            }
+            
           });
-        }
+        }*/
+      console.log(a)
       }
       //  return data;
     )
@@ -58,8 +57,34 @@ const getProducts = async () => {
       // Une erreur est survenue
     });
 };
-const bob = () => {
-  console.log("bob is here");
+const deleteProduct = () => {
+  var buttons = document.querySelectorAll(".deleteItem").length;
+
+        for (var i = 0; i < buttons; i++) {
+          document.querySelectorAll(".deleteItem")[i].addEventListener("click", function () {
+          //  alert("Button Clicked");
+           // alert(this.closest("article").dataset.id);
+           // alert(this.closest("article").dataset.colors);
+          // alert(i);
+
+            
+              Object.keys(a).forEach((key) => {
+                //  console.log(a[key])
+
+                if (a[key].id == this.closest("article").dataset.id && a[key].colors == this.closest("article").dataset.colors) {
+                  console.log(key);
+                  a.splice(key, 1);
+                  localStorage.setItem("obj", JSON.stringify(a));
+                  window.setTimeout( function() {
+                    window.location.reload();
+                  });
+
+                }
+              });
+
+            
+          });
+        }
 };
 
 const changeQuantity = () => {
