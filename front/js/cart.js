@@ -20,8 +20,14 @@ const getProducts = async () => {
         doc.forEach((docx) => {
           docx.addEventListener("change", changeQuantity);
         });
+        let button = document.getElementById("order");
+        button.addEventListener("click", verifyUserData);
+
+        quantityCart();
+        priceCart();
         deleteProduct();
-/*
+
+        /*
         var buttons = document.querySelectorAll(".deleteItem").length;
 
         for (var i = 0; i < buttons; i++) {
@@ -49,7 +55,7 @@ const getProducts = async () => {
             
           });
         }*/
-      console.log(a)
+        console.log(a);
       }
       //  return data;
     )
@@ -58,33 +64,32 @@ const getProducts = async () => {
     });
 };
 const deleteProduct = () => {
-  var buttons = document.querySelectorAll(".deleteItem").length;
+  const buttons = document.querySelectorAll(".deleteItem");
+  //  var buttons = document.querySelectorAll(".deleteItem").length;
 
-        for (var i = 0; i < buttons; i++) {
-          document.querySelectorAll(".deleteItem")[i].addEventListener("click", function () {
-          //  alert("Button Clicked");
-           // alert(this.closest("article").dataset.id);
-           // alert(this.closest("article").dataset.colors);
-          // alert(i);
+  // for (var i = 0; i < buttons; i++) {
+  buttons.forEach((button) => {
+    // document.querySelectorAll(".deleteItem").addEventListener("click", function () {
+    button.addEventListener("click", function () {
+      //  alert("Button Clicked");
+      // alert(this.closest("article").dataset.id);
+      // alert(this.closest("article").dataset.colors);
+      // alert(i);
 
-            
-              Object.keys(a).forEach((key) => {
-                //  console.log(a[key])
+      Object.keys(a).forEach((key) => {
+        //  console.log(a[key])
 
-                if (a[key].id == this.closest("article").dataset.id && a[key].colors == this.closest("article").dataset.colors) {
-                  console.log(key);
-                  a.splice(key, 1);
-                  localStorage.setItem("obj", JSON.stringify(a));
-                  window.setTimeout( function() {
-                    window.location.reload();
-                  });
-
-                }
-              });
-
-            
+        if (a[key].id == this.closest("article").dataset.id && a[key].colors == this.closest("article").dataset.colors) {
+          console.log(key);
+          a.splice(key, 1);
+          localStorage.setItem("obj", JSON.stringify(a));
+          window.setTimeout(function () {
+            window.location.reload();
           });
         }
+      });
+    });
+  });
 };
 
 const changeQuantity = () => {
@@ -172,7 +177,150 @@ const showCart = (a, products) => {
       console.log("echec");
     }
   });
-
 };
 
+const postOrder = async (order) => {
+  try {
+      const response = await fetch("http://localhost:3000/api/products/order", {
+          method: "POST",
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(order)
+      })
+      .then(function (res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        products = data;
+        console.log(products);
+        console.log(products.orderId)
+        window.location.replace("./confirmation.html?id="+ products.orderId);
+      })
+    } catch(error) {
+      console.log(error);
+  }
+}
+
+const verifyUserData = () => {
+  const regExFirstLastName = /^[\w'\-,.][^0-9_!¡?÷?¿\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/i;
+  const regExEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  const regExAddress = /^([a-zA-z0-9/\\''(),-\s]{2,255})$/i;
+  const regExCity = /^[a-zA-Z\u0080-\u024F\s\/\-\)\(\`\.\']+$/i;
+  let error = 0;
+
+  let firstName = document.getElementById("firstName");
+  let lastName = document.getElementById("lastName");
+  let address = document.getElementById("address");
+  let city = document.getElementById("city");
+  let email = document.getElementById("email");
+ 
+  //   function isValid(value) {
+  //     return regExFirstLastName.test(value);
+  // }
+  //   alert(isValid(firstName))
+
+  if (firstName.value.match(regExFirstLastName)) {
+
+  } else {
+    let errorName = document.getElementById("firstNameErrorMsg");
+    errorName.textContent = "Caractère refuser";
+    alert("erreur prénom");
+    error = 1;
+  }
+  if (lastName.value.match(regExFirstLastName)) {
+
+  } else {
+    let errorName = document.getElementById("lastNameErrorMsg");
+    errorName.textContent = "Caractère refuser";
+    alert("erreur nom");
+    error = 1;
+  }
+  if (address.value.match(regExAddress)) {
+
+  } else {
+    let errorName = document.getElementById("addressErrorMsg");
+    errorName.textContent = "Caractère refuser";
+    alert("erreur addresse");
+    error = 1;
+  }
+  if (city.value.match(regExCity)) {
+
+  } else {
+    let errorName = document.getElementById("cityErrorMsg");
+    errorName.textContent = "Caractère refuser";
+    alert("erreur city");
+    error = 1;
+  }
+  if (email.value.match(regExEmail)) {
+ 
+  } else {
+    let errorMail = document.getElementById("emailErrorMsg");
+    errorMail.textContent = "Erreur dans le mail";
+    alert("mail refuser");
+    error = 1;
+  }
+  if (error >= 1) {
+    error = 0;
+    addEventListener("click", function (event) {
+      event.preventDefault();
+    });
+  } else {
+    let order = {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      address: address.value,
+      city: city.value,
+      email: email.value,
+    };
+  
+       let products = [];
+  
+      Object.keys(a).forEach((key) => {
+        products.push(a[key].id);
+      })
+      let contact = {
+        contact : order,
+        products : products 
+      }
+    postOrder(contact);
+   }
+};
+
+const quantityCart = () => {
+  const quantityItem = document.getElementById("totalQuantity");
+  let numberOfItem = 0;
+  Object.keys(a).forEach((key) => {
+    // console.log(a[key].quantity)
+    numberOfItem = parseInt(a[key].quantity) + parseInt(numberOfItem);
+    //  console.log(numberOfItem)
+  });
+  quantityItem.textContent = numberOfItem;
+};
+const priceCart = () => {
+  const priceOfItem = document.getElementById("totalPrice");
+  let price = 0;
+  products.forEach((product) => {
+    Object.keys(a).forEach((key) => {
+      if (a[key].id == product._id) {
+        price = parseInt(product.price) + parseInt(price);
+      }
+    });
+    priceOfItem.textContent = price;
+  });
+};
 getProducts();
+
+/*
+function ValidateEmail(mail) 
+{
+ if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(myForm.emailAddr.value))
+  {
+    return (true)
+  }
+    alert("You have entered an invalid email address!")
+    return (false)
+}*/
