@@ -16,7 +16,7 @@ const getProducts = async () => {
       //  return data;
     })
     .catch(function (err) {
-      // Une erreur est survenue
+      console.log(err)
     });
 };
 

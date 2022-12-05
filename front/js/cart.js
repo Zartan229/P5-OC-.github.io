@@ -8,81 +8,36 @@ const getProducts = async () => {
       }
     })
 
-    .then(
-      (data) => {
-        products = data;
-        a = JSON.parse(localStorage.getItem("obj"));
-        showCart(a, products);
+    .then((data) => {
+      products = data;
+      storage = JSON.parse(localStorage.getItem("obj"));
+      showCart(storage, products);
 
-        const doc = document.querySelectorAll(".itemQuantity");
-        //  const deleteItem = document.querySelectorAll('.deleteItem')
-        //    console.log(doc)
-        doc.forEach((docx) => {
-          docx.addEventListener("change", changeQuantity);
-        });
-        let button = document.getElementById("order");
-        button.addEventListener("click", verifyUserData);
+      const doc = document.querySelectorAll(".itemQuantity");
+      doc.forEach((docx) => {
+        docx.addEventListener("change", changeQuantity);
+      });
+      let button = document.getElementById("order");
+      button.addEventListener("click", verifyUserData);
 
-        quantityCart();
-        priceCart();
-        deleteProduct();
-
-        /*
-        var buttons = document.querySelectorAll(".deleteItem").length;
-
-        for (var i = 0; i < buttons; i++) {
-          document.querySelectorAll(".deleteItem")[i].addEventListener("click", function () {
-          //  alert("Button Clicked");
-           // alert(this.closest("article").dataset.id);
-           // alert(this.closest("article").dataset.colors);
-          // alert(i);
-
-            
-              Object.keys(a).forEach((key) => {
-                //  console.log(a[key])
-
-                if (a[key].id == this.closest("article").dataset.id && a[key].colors == this.closest("article").dataset.colors) {
-                  console.log(key);
-                  a.splice(key, 1);
-                  localStorage.setItem("obj", JSON.stringify(a));
-                  window.setTimeout( function() {
-                    window.location.reload();
-                  });
-
-                }
-              });
-
-            
-          });
-        }*/
-        console.log(a);
-      }
-      //  return data;
-    )
+      quantityCart();
+      priceCart();
+      deleteProduct();
+    })
     .catch(function (err) {
-      // Une erreur est survenue
+      console.log(err);
     });
 };
 const deleteProduct = () => {
-  const buttons = document.querySelectorAll(".deleteItem");
-  //  var buttons = document.querySelectorAll(".deleteItem").length;
+  const productToDelete = document.querySelectorAll(".deleteItem");
 
-  // for (var i = 0; i < buttons; i++) {
-  buttons.forEach((button) => {
-    // document.querySelectorAll(".deleteItem").addEventListener("click", function () {
-    button.addEventListener("click", function () {
-      //  alert("Button Clicked");
-      // alert(this.closest("article").dataset.id);
-      // alert(this.closest("article").dataset.colors);
-      // alert(i);
-
-      Object.keys(a).forEach((key) => {
-        //  console.log(a[key])
-
-        if (a[key].id == this.closest("article").dataset.id && a[key].colors == this.closest("article").dataset.colors) {
+  productToDelete.forEach((productToDeleteSelected) => {
+    productToDeleteSelected.addEventListener("click", function () {
+      Object.keys(storage).forEach((key) => {
+        if (storage[key].id == this.closest("article").dataset.id && storage[key].colors == this.closest("article").dataset.colors) {
           console.log(key);
-          a.splice(key, 1);
-          localStorage.setItem("obj", JSON.stringify(a));
+          storage.splice(key, 1);
+          localStorage.setItem("obj", JSON.stringify(storage));
           window.setTimeout(function () {
             window.location.reload();
           });
@@ -93,39 +48,38 @@ const deleteProduct = () => {
 };
 
 const changeQuantity = () => {
-  //console.log("bob1")
-
   var elems = document.querySelectorAll(".itemQuantity");
-  // console.log(elems[1].value)
+
   elems.forEach((element) => {
     console.log(element.value);
     console.log(element.closest("article").dataset.id);
     console.log(element.closest("article").dataset.colors);
 
-    const productInLocalStorage = a.find(
+    const productInLocalStorage = storage.find(
       (product) => product.id == element.closest("article").dataset.id && product.colors == element.closest("article").dataset.colors
     );
 
-    //console.log(productInLocalStorage.quantity)
     if (productInLocalStorage.quantity != element.value) {
-      productInLocalStorage.quantity = element.value;
-      localStorage.setItem("obj", JSON.stringify(a));
+      if (element.value <= 0 || element.value > 100) {
+        alert("La quantiter ne peux pas être inférieur a 1 et supérieur a 100");
+        element.value = 1;
+        productInLocalStorage.quantity = element.value;
+        localStorage.setItem("obj", JSON.stringify(storage));
+      }
     }
   });
 };
 
-const showCart = (a, products) => {
-  Object.keys(a).forEach((key) => {
-    // console.log(a[key]);
-    PrdouctDetail = products.find((prod) => a[key].id == prod._id);
-    // console.log(PrdouctDetail)
+const showCart = (storage, products) => {
+  Object.keys(storage).forEach((key) => {
+    PrdouctDetail = products.find((prod) => storage[key].id == prod._id);
+
     if (PrdouctDetail) {
-      //console.log("trouver")
       let getElementMaster = document.getElementById("cart__items");
       const setElementArticle = document.createElement("article");
       setElementArticle.classList.add("cart__item");
       setElementArticle.dataset.id = PrdouctDetail._id;
-      setElementArticle.dataset.colors = a[key].colors;
+      setElementArticle.dataset.colors = storage[key].colors;
       getElementMaster.appendChild(setElementArticle);
       const setElementDiv = document.createElement("div");
       setElementDiv.classList.add("cart__item__img");
@@ -143,9 +97,10 @@ const showCart = (a, products) => {
       const setElementSecondFirstDivTitle = document.createElement("h2");
       setElementSecondFirstDivTitle.textContent = PrdouctDetail.name;
       const setElementSecondFirstDivP = document.createElement("p");
-      setElementSecondFirstDivP.textContent = a[key].colors;
+      setElementSecondFirstDivP.textContent = storage[key].colors;
       const setElementSecondFirstDivPSecond = document.createElement("p");
-      setElementSecondFirstDivPSecond.textContent = PrdouctDetail.price = a[key].quantity * PrdouctDetail.price;
+      setElementSecondFirstDivPSecond.textContent = PrdouctDetail.price = storage[key].quantity * PrdouctDetail.price;
+      setElementSecondFirstDivPSecond.textContent = PrdouctDetail.price + " €";
       setElementSecondFirstDiv.appendChild(setElementSecondFirstDivTitle);
       setElementSecondFirstDiv.appendChild(setElementSecondFirstDivP);
       setElementSecondFirstDiv.appendChild(setElementSecondFirstDivPSecond);
@@ -165,7 +120,7 @@ const showCart = (a, products) => {
       setElementThirdFirstDivInput.name = "itemQuantity";
       setElementThirdFirstDivInput.min = "1";
       setElementThirdFirstDivInput.max = "100";
-      setElementThirdFirstDivInput.value = a[key].quantity;
+      setElementThirdFirstDivInput.value = storage[key].quantity;
       const setElementThirdSecondDiv = document.createElement("div");
       setElementThirdDiv.appendChild(setElementThirdSecondDiv);
       setElementThirdSecondDiv.classList.add("cart__item__content__settings__delete");
@@ -173,41 +128,33 @@ const showCart = (a, products) => {
       setElementThirdSecondDivP.textContent = "Supprimer";
       setElementThirdSecondDiv.appendChild(setElementThirdSecondDivP);
       setElementThirdSecondDivP.classList.add("deleteItem");
-    } else {
-      console.log("echec");
     }
   });
 };
 
 const postOrder = async (order) => {
-  try {
-      const response = await fetch("http://localhost:3000/api/products/order", {
-          method: "POST",
-          headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(order)
-      })
-      .then(function (res) {
-        if (res.ok) {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        products = data;
-        console.log(products);
-        console.log(products.orderId)
-        window.location.replace("./confirmation.html?id="+ products.orderId);
-      })
-    } catch(error) {
-      console.log(error);
-  }
-}
+  const response = await fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(order),
+  })
+    .then(function (res) {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+    .then((data) => {
+      products = data;
+      window.location.replace("./confirmation.html?id=" + products.orderId);
+    });
+};
 
 const verifyUserData = () => {
   const regExFirstLastName = /^[\w'\-,.][^0-9_!¡?÷?¿\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/i;
-  const regExEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  const regExEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/;
   const regExAddress = /^([a-zA-z0-9/\\''(),-\s]{2,255})$/i;
   const regExCity = /^[a-zA-Z\u0080-\u024F\s\/\-\)\(\`\.\']+$/i;
   let error = 0;
@@ -217,14 +164,8 @@ const verifyUserData = () => {
   let address = document.getElementById("address");
   let city = document.getElementById("city");
   let email = document.getElementById("email");
- 
-  //   function isValid(value) {
-  //     return regExFirstLastName.test(value);
-  // }
-  //   alert(isValid(firstName))
 
   if (firstName.value.match(regExFirstLastName)) {
-
   } else {
     let errorName = document.getElementById("firstNameErrorMsg");
     errorName.textContent = "Caractère refuser";
@@ -232,7 +173,6 @@ const verifyUserData = () => {
     error = 1;
   }
   if (lastName.value.match(regExFirstLastName)) {
-
   } else {
     let errorName = document.getElementById("lastNameErrorMsg");
     errorName.textContent = "Caractère refuser";
@@ -240,7 +180,6 @@ const verifyUserData = () => {
     error = 1;
   }
   if (address.value.match(regExAddress)) {
-
   } else {
     let errorName = document.getElementById("addressErrorMsg");
     errorName.textContent = "Caractère refuser";
@@ -248,7 +187,6 @@ const verifyUserData = () => {
     error = 1;
   }
   if (city.value.match(regExCity)) {
-
   } else {
     let errorName = document.getElementById("cityErrorMsg");
     errorName.textContent = "Caractère refuser";
@@ -256,7 +194,6 @@ const verifyUserData = () => {
     error = 1;
   }
   if (email.value.match(regExEmail)) {
- 
   } else {
     let errorMail = document.getElementById("emailErrorMsg");
     errorMail.textContent = "Erreur dans le mail";
@@ -276,27 +213,25 @@ const verifyUserData = () => {
       city: city.value,
       email: email.value,
     };
-  
-       let products = [];
-  
-      Object.keys(a).forEach((key) => {
-        products.push(a[key].id);
-      })
-      let contact = {
-        contact : order,
-        products : products 
-      }
+
+    let products = [];
+
+    Object.keys(storage).forEach((key) => {
+      products.push(storage[key].id);
+    });
+    let contact = {
+      contact: order,
+      products: products,
+    };
     postOrder(contact);
-   }
+  }
 };
 
 const quantityCart = () => {
   const quantityItem = document.getElementById("totalQuantity");
   let numberOfItem = 0;
-  Object.keys(a).forEach((key) => {
-    // console.log(a[key].quantity)
-    numberOfItem = parseInt(a[key].quantity) + parseInt(numberOfItem);
-    //  console.log(numberOfItem)
+  Object.keys(storage).forEach((key) => {
+    numberOfItem = parseInt(storage[key].quantity) + parseInt(numberOfItem);
   });
   quantityItem.textContent = numberOfItem;
 };
@@ -304,8 +239,8 @@ const priceCart = () => {
   const priceOfItem = document.getElementById("totalPrice");
   let price = 0;
   products.forEach((product) => {
-    Object.keys(a).forEach((key) => {
-      if (a[key].id == product._id) {
+    Object.keys(storage).forEach((key) => {
+      if (storage[key].id == product._id) {
         price = parseInt(product.price) + parseInt(price);
       }
     });
@@ -313,14 +248,3 @@ const priceCart = () => {
   });
 };
 getProducts();
-
-/*
-function ValidateEmail(mail) 
-{
- if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(myForm.emailAddr.value))
-  {
-    return (true)
-  }
-    alert("You have entered an invalid email address!")
-    return (false)
-}*/
