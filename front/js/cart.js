@@ -1,5 +1,5 @@
 let products = [];
-
+//getProducts récupère les données dans l'API.
 const getProducts = async () => {
   await fetch("http://localhost:3000/api/products")
     .then(function (res) {
@@ -28,6 +28,10 @@ const getProducts = async () => {
       console.log(err);
     });
 };
+//Dans productToDelete on stock un array d'objet qui contient toute les class lier a .deleteItem
+//ensuite pour chaque produit qui existe on a initialiser le bouton supprimer qui lui est lier
+//puis finalement nous allons vérifier quelle objet a supprimer en récupérent les dataset id et colors les plus proche
+//ensuite on effectue une passe, si les dataset corresponde a un élément dans le localstorage cet elément est suprimer.
 const deleteProduct = () => {
   const productToDelete = document.querySelectorAll(".deleteItem");
 
@@ -46,34 +50,33 @@ const deleteProduct = () => {
     });
   });
 };
-
+//Dans quantityToChange on stock un array d'objet qui contient toute les class lier a .itemQuantity
+//la fonction va chercher dans le localStorage quelle élement correspond au plus proche dataset id et colors
+//il retourne le résultat et si c'est unrésultat valable il le push dans le localStorage
 const changeQuantity = () => {
-  var elems = document.querySelectorAll(".itemQuantity");
-
-  elems.forEach((element) => {
-    console.log(element.value);
-    console.log(element.closest("article").dataset.id);
-    console.log(element.closest("article").dataset.colors);
-
-    const productInLocalStorage = storage.find(
-      (product) => product.id == element.closest("article").dataset.id && product.colors == element.closest("article").dataset.colors
-    );
-
-    if (productInLocalStorage.quantity != element.value) {
-      if (element.value <= 0 || element.value > 100) {
+  let quantityToChange = document.querySelectorAll(".itemQuantity");
+  quantityToChange.forEach((quantityChanged) => {
+    const productInLocalStorage = storage.find((product) => product.id == quantityChanged.closest("article").dataset.id && product.colors == quantityChanged.closest("article").dataset.colors);
+    if (productInLocalStorage.quantity != quantityChanged.value) {
+      if (quantityChanged.value <= 0 || quantityChanged.value > 100) {
         alert("La quantiter ne peux pas être inférieur a 1 et supérieur a 100");
-        element.value = 1;
-        productInLocalStorage.quantity = element.value;
+        quantityChanged.value = 1;
+        productInLocalStorage.quantity = quantityChanged.value;
+        localStorage.setItem("obj", JSON.stringify(storage));
+      }
+      else
+      {
+        productInLocalStorage.quantity = quantityChanged.value;
         localStorage.setItem("obj", JSON.stringify(storage));
       }
     }
   });
 };
-
+//Récupère le fetch des produit ainsi que ceux présent dans le localStorage
+//Affiche les produits séléctionner, ainsi que leurs information.
 const showCart = (storage, products) => {
   Object.keys(storage).forEach((key) => {
     PrdouctDetail = products.find((prod) => storage[key].id == prod._id);
-
     if (PrdouctDetail) {
       let getElementMaster = document.getElementById("cart__items");
       const setElementArticle = document.createElement("article");
@@ -131,7 +134,11 @@ const showCart = (storage, products) => {
     }
   });
 };
-
+//Récupère l'objet order et l'envoie dans une requête.
+//data est placer dans products.
+//res.json donne accès a la réponse qui fournit un orderId.
+//window.location.replace permet de changer d'url, donc on peut changer de page 
+//et fournir l'id de l'ordre en même temps
 const postOrder = async (order) => {
   const response = await fetch("http://localhost:3000/api/products/order", {
     method: "POST",
@@ -151,7 +158,9 @@ const postOrder = async (order) => {
       window.location.replace("./confirmation.html?id=" + products.orderId);
     });
 };
-
+//Créer des rexEx et les test sur chaque champs correspondant.
+//Bloque l'envoie si il y'as un problême sinon, envoie les donnée.
+//Crée l'objet order qui contient une liste d'objet et un tableau
 const verifyUserData = () => {
   const regExFirstLastName = /^[\w'\-,.][^0-9_!¡?÷?¿\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/i;
   const regExEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/;
@@ -165,6 +174,8 @@ const verifyUserData = () => {
   let city = document.getElementById("city");
   let email = document.getElementById("email");
 
+  if(!storage)
+  {
   if (firstName.value.match(regExFirstLastName)) {
   } else {
     let errorName = document.getElementById("firstNameErrorMsg");
@@ -206,7 +217,7 @@ const verifyUserData = () => {
       event.preventDefault();
     });
   } else {
-    let order = {
+    let contact = {
       firstName: firstName.value,
       lastName: lastName.value,
       address: address.value,
@@ -219,14 +230,21 @@ const verifyUserData = () => {
     Object.keys(storage).forEach((key) => {
       products.push(storage[key].id);
     });
-    let contact = {
-      contact: order,
+    let order = {
+      contact: contact,
       products: products,
     };
-    postOrder(contact);
+    postOrder(order);
+  }}
+  else{
+    alert("riend dans le panier")
+    addEventListener("click", function (event) {
+      event.preventDefault();
+    });
   }
 };
-
+// Calcule le nombre de canaper souhaiter dans le localStorage
+//ajoute le résultat dans le DOM
 const quantityCart = () => {
   const quantityItem = document.getElementById("totalQuantity");
   let numberOfItem = 0;
@@ -235,6 +253,9 @@ const quantityCart = () => {
   });
   quantityItem.textContent = numberOfItem;
 };
+//Pour chaque produit dans le localStorage on compare l'id a celui dans le fetch.
+//On ajoute le prix récolter dans price qui augmente celon les canaper trouver
+//ensuite on l'ajoute dans le dom
 const priceCart = () => {
   const priceOfItem = document.getElementById("totalPrice");
   let price = 0;

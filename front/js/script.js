@@ -1,9 +1,13 @@
 let products = [];
+//getProducts récupère les données dans l'API.
+//Ces données sont ensuite transposer dans productsOffer(products)
+//Qui récupère l'array d'objet qui est récupérer a travers data
 
 const getProducts = async () => {
   await fetch("http://localhost:3000/api/products")
     .then(function (res) {
       if (res.ok) {
+       // console.log(res)
         return res.json();
       }
     })
@@ -19,7 +23,9 @@ const getProducts = async () => {
       console.log(err)
     });
 };
-
+//productsOffer récupère l'information du fetch
+//Et pour chaque élement présent dans le fetch effectue le code
+//présent dans productsOffer pour afficher ces éléments.
 const productsOffer = (products) => {
   products.forEach((product) => {
     const productName = product.name;
