@@ -56,16 +56,16 @@ const deleteProduct = () => {
 const changeQuantity = () => {
   let quantityToChange = document.querySelectorAll(".itemQuantity");
   quantityToChange.forEach((quantityChanged) => {
-    const productInLocalStorage = storage.find((product) => product.id == quantityChanged.closest("article").dataset.id && product.colors == quantityChanged.closest("article").dataset.colors);
+    const productInLocalStorage = storage.find(
+      (product) => product.id == quantityChanged.closest("article").dataset.id && product.colors == quantityChanged.closest("article").dataset.colors
+    );
     if (productInLocalStorage.quantity != quantityChanged.value) {
       if (quantityChanged.value <= 0 || quantityChanged.value > 100) {
         alert("La quantiter ne peux pas être inférieur a 1 et supérieur a 100");
         quantityChanged.value = 1;
         productInLocalStorage.quantity = quantityChanged.value;
         localStorage.setItem("obj", JSON.stringify(storage));
-      }
-      else
-      {
+      } else {
         productInLocalStorage.quantity = quantityChanged.value;
         localStorage.setItem("obj", JSON.stringify(storage));
       }
@@ -137,7 +137,7 @@ const showCart = (storage, products) => {
 //Récupère l'objet order et l'envoie dans une requête.
 //data est placer dans products.
 //res.json donne accès a la réponse qui fournit un orderId.
-//window.location.replace permet de changer d'url, donc on peut changer de page 
+//window.location.replace permet de changer d'url, donc on peut changer de page
 //et fournir l'id de l'ordre en même temps
 const postOrder = async (order) => {
   const response = await fetch("http://localhost:3000/api/products/order", {
@@ -155,6 +155,7 @@ const postOrder = async (order) => {
     })
     .then((data) => {
       products = data;
+      console.log(data)
       window.location.replace("./confirmation.html?id=" + products.orderId);
     });
 };
@@ -173,71 +174,74 @@ const verifyUserData = () => {
   let address = document.getElementById("address");
   let city = document.getElementById("city");
   let email = document.getElementById("email");
+  let storage = JSON.parse(localStorage.getItem("obj"));
+  if (document.getElementById("totalQuantity").textContent > 0) {
+    if (firstName.value.match(regExFirstLastName)) {
+    } else {
+      let errorName = document.getElementById("firstNameErrorMsg");
+      errorName.textContent = "Caractère refuser";
+      alert("erreur prénom");
+      error = 1;
+    }
+    if (lastName.value.match(regExFirstLastName)) {
+    } else {
+      let errorName = document.getElementById("lastNameErrorMsg");
+      errorName.textContent = "Caractère refuser";
+      alert("erreur nom");
+      error = 1;
+    }
+    if (address.value.match(regExAddress)) {
+    } else {
+      let errorName = document.getElementById("addressErrorMsg");
+      errorName.textContent = "Caractère refuser";
+      alert("erreur addresse");
+      error = 1;
+    }
+    if (city.value.match(regExCity)) {
+    } else {
+      let errorName = document.getElementById("cityErrorMsg");
+      errorName.textContent = "Caractère refuser";
+      alert("erreur city");
+      error = 1;
+    }
+    if (email.value.match(regExEmail)) {
+    } else {
+      let errorMail = document.getElementById("emailErrorMsg");
+      errorMail.textContent = "Erreur dans le mail";
+      alert("mail refuser");
+      error = 1;
+    }
+    if (error >= 1) {
+      error = 0;
+      addEventListener("click", function (event) {
+        event.preventDefault();
+      });
+    } else {
+      let contact = {
+        firstName: firstName.value,
+        lastName: lastName.value,
+        address: address.value,
+        city: city.value,
+        email: email.value,
+      };
 
-  if(!storage)
-  {
-  if (firstName.value.match(regExFirstLastName)) {
-  } else {
-    let errorName = document.getElementById("firstNameErrorMsg");
-    errorName.textContent = "Caractère refuser";
-    alert("erreur prénom");
-    error = 1;
-  }
-  if (lastName.value.match(regExFirstLastName)) {
-  } else {
-    let errorName = document.getElementById("lastNameErrorMsg");
-    errorName.textContent = "Caractère refuser";
-    alert("erreur nom");
-    error = 1;
-  }
-  if (address.value.match(regExAddress)) {
-  } else {
-    let errorName = document.getElementById("addressErrorMsg");
-    errorName.textContent = "Caractère refuser";
-    alert("erreur addresse");
-    error = 1;
-  }
-  if (city.value.match(regExCity)) {
-  } else {
-    let errorName = document.getElementById("cityErrorMsg");
-    errorName.textContent = "Caractère refuser";
-    alert("erreur city");
-    error = 1;
-  }
-  if (email.value.match(regExEmail)) {
-  } else {
-    let errorMail = document.getElementById("emailErrorMsg");
-    errorMail.textContent = "Erreur dans le mail";
-    alert("mail refuser");
-    error = 1;
-  }
-  if (error >= 1) {
-    error = 0;
-    addEventListener("click", function (event) {
-      event.preventDefault();
-    });
-  } else {
-    let contact = {
-      firstName: firstName.value,
-      lastName: lastName.value,
-      address: address.value,
-      city: city.value,
-      email: email.value,
-    };
+      let prod = [];
 
-    let products = [];
-
-    Object.keys(storage).forEach((key) => {
-      products.push(storage[key].id);
-    });
-    let order = {
-      contact: contact,
-      products: products,
-    };
-    postOrder(order);
-  }}
-  else{
-    alert("riend dans le panier")
+      Object.keys(storage).forEach((key) => {
+        prod.push(storage[key].id);
+      });
+      let order = {
+        contact: contact,
+        products: prod,
+      };
+      
+      postOrder(order);
+      addEventListener("click", function (event) {
+        event.preventDefault();
+      });
+    }
+  } else {
+    alert("rien dans le panier");
     addEventListener("click", function (event) {
       event.preventDefault();
     });
